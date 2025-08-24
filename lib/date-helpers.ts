@@ -25,8 +25,17 @@ export const MONTH_LABELS = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
+export const MONTH_EMOJIS = [
+  '❄️', '💝', '🌸', '🌷', '🌺', '🌻',
+  '🌞', '🏖️', '🍂', '🎃', '🦃', '🎄'
+];
+
 export function getMonthLabel(month: number): string {
   return MONTH_LABELS[month - 1];
+}
+
+export function getMonthEmoji(month: number): string {
+  return MONTH_EMOJIS[month - 1];
 }
 
 export function getMonthFromDate(dateString: string): number {

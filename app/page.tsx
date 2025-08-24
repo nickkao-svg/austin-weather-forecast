@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import MonthCard from './components/MonthCard';
 import ClimatologyModal from './components/ClimatologyModal';
 import { ForecastItem, MonthSummary } from '@/lib/transform-helpers';
-import { getChicagoToday, getMonthLabel } from '@/lib/date-helpers';
+import { getChicagoToday, getMonthLabel, getMonthEmoji } from '@/lib/date-helpers';
 
 interface ForecastData {
   climatology: MonthSummary[];
@@ -112,7 +112,7 @@ export default function Home() {
 
     const temp = monthData.mean || 0;
     const weatherEmoji = getWeatherEmoji(temp);
-    const seasonEmoji = getSeasonEmoji(monthNumber);
+    const monthEmoji = getMonthEmoji(monthNumber);
     const funMessage = getFunMessage(temp);
     const tempColor = getTemperatureColor(temp);
 
@@ -137,16 +137,11 @@ export default function Home() {
         )}
         
         <div className="relative z-10 p-6">
-          {/* Header with season and month */}
+          {/* Header with month emoji */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">{seasonEmoji}</span>
-                             <div className={`text-lg font-bold ${
-                 isCurrentMonth ? 'text-gray-900' : 'text-gray-700'
-               }`}>
-                 {getMonthLabel(monthNumber)}
-               </div>
-             </div>
+              <span className="text-3xl">{monthEmoji}</span>
+            </div>
              <div className={`text-3xl font-black opacity-20 ${
                isCurrentMonth ? 'text-gray-500' : 'text-gray-400'
              }`}>
