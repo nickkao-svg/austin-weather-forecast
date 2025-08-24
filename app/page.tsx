@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import MonthCard from './components/MonthCard';
 import ClimatologyModal from './components/ClimatologyModal';
+import CitySelector from './components/CitySelector';
 import { ForecastItem, MonthSummary } from '@/lib/transform-helpers';
-import { getChicagoToday, getMonthLabel } from '@/lib/date-helpers';
+import { getCityToday, getMonthLabel } from '@/lib/date-helpers';
+import { CityConfig, getDefaultCity } from '@/lib/city-config';
 
 interface ForecastData {
   climatology: MonthSummary[];
@@ -12,6 +14,7 @@ interface ForecastData {
 }
 
 export default function Home() {
+  const [selectedCity, setSelectedCity] = useState<CityConfig>(getDefaultCity());
   const [data, setData] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,14 +24,14 @@ export default function Home() {
 
   useEffect(() => {
     fetchForecastData();
-  }, []);
+  }, [selectedCity]);
 
   const fetchForecastData = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/weather/forecast-monthly');
+      const response = await fetch(`/api/weather/forecast-monthly?city=${selectedCity.id}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -57,7 +60,7 @@ export default function Home() {
   };
 
   const getCurrentMonth = () => {
-    return getChicagoToday().getMonth() + 1; // 1-12
+    return getCityToday(selectedCity.timezone).getMonth() + 1; // 1-12
   };
 
   const getWeatherEmoji = (temp: number) => {
@@ -196,7 +199,7 @@ export default function Home() {
             <div className="text-8xl mb-4 animate-pulse">🌤️</div>
             <div className="w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
-          <p className="text-xl font-bold mb-2">Loading Austin's Weather</p>
+          <p className="text-xl font-bold mb-2">Loading {selectedCity.name}'s Weather</p>
           <div className="text-blue-100">Gathering climate data...</div>
           <div className="mt-4 text-blue-200 text-sm">☀️ 🌧️ ❄️ 🌪️</div>
         </div>
@@ -238,7 +241,7 @@ export default function Home() {
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="text-6xl animate-bounce" style={{animationDelay: '0s'}}>🌡️</div>
             <h1 className="text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Austin Weather
+              {selectedCity.name} Weather
             </h1>
             <div className="text-6xl animate-bounce" style={{animationDelay: '0.5s'}}>🌡️</div>
           </div>
@@ -246,9 +249,12 @@ export default function Home() {
             Monthly Climate Patterns
           </p>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Explore <span className="font-semibold text-blue-600">10 years of Austin weather data</span> to see typical temperatures for each month. 
+            Explore <span className="font-semibold text-blue-600">10 years of {selectedCity.name} weather data</span> to see typical temperatures for each month. 
             Click any month for detailed stats and predictions.
           </p>
+          
+          {/* City Selector */}
+          <CitySelector selectedCity={selectedCity} onCityChange={setSelectedCity} />
           
           <div className="flex items-center justify-center gap-3">
             <span className="text-2xl">🌎</span>
@@ -283,7 +289,7 @@ export default function Home() {
             <span className="text-3xl">📊</span>
           </div>
           <div className="text-gray-500 text-sm">
-            🌤️ Austin's weather, made simple and fun! 🌤️
+            🌤️ {selectedCity.name}'s weather, made simple and fun! 🌤️
           </div>
         </div>
       </div>

@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTenYearStartDate, getYesterdayISO } from '@/lib/date-helpers';
 import { WeatherRow } from '@/lib/transform-helpers';
+import { getCityById, getDefaultCity } from '@/lib/city-config';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const startDate = getTenYearStartDate();
-    const endDate = getYesterdayISO();
+    const { searchParams } = new URL(request.url);
+    const cityId = searchParams.get('city') || 'austin';
     
-    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=30.2672&longitude=-97.7431&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_mean,temperature_2m_max,temperature_2m_min&timezone=America/Chicago`;
+    const city = getCityById(cityId) || getDefaultCity();
+    
+    const startDate = getTenYearStartDate(city.timezone);
+    const endDate = getYesterdayISO(city.timezone);
+    
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${city.latitude}&longitude=${city.longitude}&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_mean,temperature_2m_max,temperature_2m_min&timezone=${city.timezone}`;
     
     const response = await fetch(url);
     
