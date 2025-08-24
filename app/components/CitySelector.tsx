@@ -14,13 +14,12 @@ export default function CitySelector({ selectedCity, onCityChange }: CitySelecto
         <button
           key={city.id}
           onClick={() => onCityChange(city)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 font-medium ${
+          className={`px-4 py-2 rounded-full transition-all duration-300 font-medium ${
             selectedCity.id === city.id
               ? 'bg-white text-blue-600 shadow-lg scale-105'
               : 'bg-white/20 text-white hover:bg-white/30 hover:scale-105'
           }`}
         >
-          <span className="text-lg">{city.emoji}</span>
           <span>{city.name}</span>
         </button>
       ))}

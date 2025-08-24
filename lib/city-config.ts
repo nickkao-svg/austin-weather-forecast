@@ -33,7 +33,7 @@ export const CITIES: CityConfig[] = [
     latitude: 32.7767,
     longitude: -96.7970,
     timezone: 'America/Chicago',
-    emoji: '🤠',
+    emoji: '🏢',
     description: 'Big D'
   }
 ];
