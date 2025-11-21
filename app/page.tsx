@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import MonthCard from './components/MonthCard';
 import ClimatologyModal from './components/ClimatologyModal';
-import CitySelector from './components/CitySelector';
 import { ForecastItem, MonthSummary } from '@/lib/transform-helpers';
 import { getCityToday, getMonthLabel } from '@/lib/date-helpers';
-import { CityConfig, getDefaultCity } from '@/lib/city-config';
+import { getDefaultCity } from '@/lib/city-config';
 
 interface ForecastData {
   climatology: MonthSummary[];
@@ -14,7 +13,7 @@ interface ForecastData {
 }
 
 export default function Home() {
-  const [selectedCity, setSelectedCity] = useState<CityConfig>(getDefaultCity());
+  const selectedCity = getDefaultCity(); // Only Austin now
   const [data, setData] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,14 +23,14 @@ export default function Home() {
 
   useEffect(() => {
     fetchForecastData();
-  }, [selectedCity]);
+  }, []);
 
   const fetchForecastData = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`/api/weather/forecast-monthly?city=${selectedCity.id}`);
+      const response = await fetch('/api/weather/forecast-monthly?city=austin');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -113,7 +112,7 @@ export default function Home() {
     
     if (!monthData) return null;
 
-    const temp = monthData.mean || 0;
+    const temp = monthData.meanTemp || 0;
     const weatherEmoji = getWeatherEmoji(temp);
     const seasonEmoji = getSeasonEmoji(monthNumber);
     const funMessage = getFunMessage(temp);
@@ -124,20 +123,13 @@ export default function Home() {
         key={monthNumber}
         className={`group relative overflow-hidden rounded-3xl cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
           isCurrentMonth 
-            ? 'bg-white border border-gray-300 shadow-sm' 
+            ? 'bg-white shadow-lg shadow-purple-200/50' 
             : 'bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50 border border-gray-200 hover:border-blue-300'
         }`}
         onClick={() => handleMonthClick(monthNumber)}
       >
         {/* Temperature gradient background */}
         <div className={`absolute inset-0 bg-gradient-to-br ${tempColor} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
-        
-        {/* Current month indicator */}
-        {isCurrentMonth && (
-          <div className="absolute top-3 right-3 bg-gray-600 text-white text-xs font-medium px-2 py-1 rounded-md">
-            Current month
-          </div>
-        )}
         
         <div className="relative z-10 p-6">
           {/* Header with season and month */}
@@ -148,6 +140,11 @@ export default function Home() {
                 isCurrentMonth ? 'text-gray-900' : 'text-gray-700'
               }`}>
                 {getMonthLabel(monthNumber)}
+                {isCurrentMonth && (
+                  <span className="ml-2 text-xs bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent font-bold">
+                    • Current month
+                  </span>
+                )}
               </div>
             </div>
              <div className={`text-3xl font-black opacity-20 ${
@@ -199,7 +196,7 @@ export default function Home() {
             <div className="text-8xl mb-4 animate-pulse">🌤️</div>
             <div className="w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
-          <p className="text-xl font-bold mb-2">Loading {selectedCity.name}'s Weather</p>
+          <p className="text-xl font-bold mb-2">Loading Austin's Weather</p>
           <div className="text-blue-100">Gathering climate data...</div>
           <div className="mt-4 text-blue-200 text-sm">☀️ 🌧️ ❄️ 🌪️</div>
         </div>
@@ -238,23 +235,20 @@ export default function Home() {
       <div className="relative z-10 container mx-auto px-6 py-12">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="text-6xl animate-bounce" style={{animationDelay: '0s'}}>🌡️</div>
-            <h1 className="text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {selectedCity.name} Weather
-            </h1>
-            <div className="text-6xl animate-bounce" style={{animationDelay: '0.5s'}}>🌡️</div>
-          </div>
+                  <div className="flex items-center justify-center mb-6">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight px-4">
+            Austin Weather
+          </h1>
+        </div>
           <p className="text-2xl text-gray-700 font-medium mb-2">
             Monthly Climate Patterns
           </p>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Explore <span className="font-semibold text-blue-600">10 years of {selectedCity.name} weather data</span> to see typical temperatures for each month. 
+            Explore <span className="font-semibold text-blue-600">10 years of Austin weather data</span> to see typical temperatures for each month. 
             Click any month for detailed stats and predictions.
           </p>
           
-          {/* City Selector */}
-          <CitySelector selectedCity={selectedCity} onCityChange={setSelectedCity} />
+
           
           <div className="flex items-center justify-center gap-3">
             <span className="text-2xl">🌎</span>
@@ -284,12 +278,12 @@ export default function Home() {
           <div className="flex items-center justify-center gap-4 mb-4">
             <span className="text-3xl">📊</span>
             <p className="text-gray-600 font-medium">
-              Powered by Open-Meteo ERA5 • Updated daily
+              Powered by National Weather Service API • Updated daily
             </p>
             <span className="text-3xl">📊</span>
           </div>
           <div className="text-gray-500 text-sm">
-            🌤️ {selectedCity.name}'s weather, made simple and fun! 🌤️
+            🌤️ Austin's weather, made simple and fun! 🌤️
           </div>
         </div>
       </div>
@@ -297,6 +291,7 @@ export default function Home() {
       <ClimatologyModal
         monthData={selectedMonth}
         forecastData={data?.forecastNext12 || null}
+        historicalData={data?.historicalData || {}}
         isOpen={modalOpen}
         onClose={closeModal}
       />
@@ -328,9 +323,9 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-bold">Open-Meteo ERA5</h3>
+                  <h3 className="text-2xl font-bold">National Weather Service API</h3>
                 </div>
-                <p className="text-blue-100 text-lg">High-resolution climate reanalysis data from the European Centre for Medium-Range Weather Forecasts</p>
+                <p className="text-blue-100 text-lg">Official weather forecasts and observations from the United States National Weather Service</p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -339,7 +334,7 @@ export default function Home() {
                     <span className="text-2xl">📍</span>
                     <h4 className="font-bold text-gray-900">Location</h4>
                   </div>
-                  <p className="text-gray-600">Austin, TX (30.2672°N, 97.7431°W)</p>
+                  <p className="text-gray-600">{selectedCity.name}, {selectedCity.latitude.toFixed(4)}°N, {selectedCity.longitude.toFixed(4)}°W</p>
                 </div>
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-2 mb-2">

@@ -17,24 +17,6 @@ export const CITIES: CityConfig[] = [
     timezone: 'America/Chicago',
     emoji: '🤠',
     description: 'Live Music Capital'
-  },
-  {
-    id: 'san-diego',
-    name: 'San Diego',
-    latitude: 32.7157,
-    longitude: -117.1611,
-    timezone: 'America/Los_Angeles',
-    emoji: '🌊',
-    description: 'America\'s Finest City'
-  },
-  {
-    id: 'dallas',
-    name: 'Dallas',
-    latitude: 32.7767,
-    longitude: -96.7970,
-    timezone: 'America/Chicago',
-    emoji: '🏢',
-    description: 'Big D'
   }
 ];
 

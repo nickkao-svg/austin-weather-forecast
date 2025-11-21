@@ -20,10 +20,10 @@ export interface YearlyAverage {
 
 export interface MonthSummary {
   month: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-  mean: number | null;
+  meanTemp: number | null;
   count: number;
-  min: number | null;
-  max: number | null;
+  minTemp: number | null;
+  maxTemp: number | null;
   p25: number | null;
   p50: number | null;
   p75: number | null;
