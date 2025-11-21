@@ -83,7 +83,7 @@ async function getHistoricalObservationsForMonth(stationId: string, month: numbe
         }
       }
     } catch (error) {
-      console.log(`Failed to fetch data for ${year}-${month}:`, error.message);
+      console.log(`Failed to fetch data for ${year}-${month}:`, error instanceof Error ? error.message : 'Unknown error');
     }
   }
   
@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
     });
     
     // Step 4: Create climatology data from forecast and add fallback data for missing months
-    const climatology = [];
+    const climatology: Array<{ month: number; meanTemp: number; maxTemp: number; minTemp: number; count: number }> = [];
     
     // Add data from NWS forecast
     Object.entries(monthlyData).forEach(([month, data]) => {
@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
     climatology.sort((a, b) => a.month - b.month);
     
     // Step 5: Get historical data for each month
-    const historicalData = {};
+    const historicalData: { [month: number]: Array<{ year: number; month: number; observations: any[] }> } = {};
     
     // Get the closest weather station
     const stationsData = await getNearbyStations(pointsData.properties.observationStations);

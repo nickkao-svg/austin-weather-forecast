@@ -10,6 +10,7 @@ import { getDefaultCity } from '@/lib/city-config';
 interface ForecastData {
   climatology: MonthSummary[];
   forecastNext12: ForecastItem[];
+  historicalData?: { [month: number]: Array<{ year: number; month: number; observations: any[] }> };
 }
 
 export default function Home() {

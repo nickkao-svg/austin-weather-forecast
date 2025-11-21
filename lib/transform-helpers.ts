@@ -97,10 +97,10 @@ export function toMonthlyClimatology(rows: WeatherRow[]): MonthSummary[] {
     
     climatology.push({
       month: month as any,
-      mean: mean(values),
+      meanTemp: mean(values),
       count: values.length,
-      min: min(values),
-      max: max(values),
+      minTemp: min(values),
+      maxTemp: max(values),
       p25: quantile(values, 25),
       p50: quantile(values, 50),
       p75: quantile(values, 75),
@@ -140,7 +140,7 @@ export function buildNext12Forecast(climatology: MonthSummary[], fromDate: Date)
     const year = currentDate.getFullYear();
     const monthData = climatology.find(c => c.month === month);
     
-    if (monthData?.mean) {
+    if (monthData?.meanTemp) {
       // Apply warming trend and add some seasonal variation
       const yearsSinceData = year - uniqueYears[uniqueYears.length - 1];
       const trendAdjustment = warmingTrend * yearsSinceData;
@@ -148,7 +148,7 @@ export function buildNext12Forecast(climatology: MonthSummary[], fromDate: Date)
       // Add small random variation (±2°F) to make predictions more realistic
       const randomVariation = (Math.random() - 0.5) * 4;
       
-      const forecastTemp = monthData.mean + trendAdjustment + randomVariation;
+      const forecastTemp = monthData.meanTemp + trendAdjustment + randomVariation;
       
       forecast.push({
         label: `${monthLabels[month - 1]} ${year}`,
